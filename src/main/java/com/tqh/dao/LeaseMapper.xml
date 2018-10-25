@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tqh.dao.LeaseMapper">
+
+	<!-- 获得分页用户列表-->
+	<select id="selectLeaseRecodeByPage" resultType="LeaseRecode" parameterType="QueryVo">
+		select * from lease_recode limit #{start},#{rows}
+	</select>
+	<!-- 获总记录数-->
+	<select id="selectCount" resultType="Integer">
+		select count(*) from lease_recode
+	</select>
+	<!-- //删除租赁记录 -->
+	<delete id="deleteLeaseRecode" parameterType="Integer">
+		delete from lease_recode where id=#{id}
+	</delete>
+	<!-- //根据uid，cid删除记录 -->
+	<select id="deleteLeaseRecodeByUidAndCid" parameterType="LeaseRecode">
+		delete from lease_recode where uid=#{uid} and cid=#{cid}
+	</select>
+	<!-- //根据用户id查询正在租赁记录并关联车信息 -->
+	<select id="selectLeaseRecodeByUid" parameterType="Integer" resultMap="RecodeByUidresultMap">
+		select * from lease_recode,car 
+		where lease_recode.cid=car.cid 
+		<!-- and lease_recode.state='0' -->
+		and lease_recode.uid=#{uid}
+	</select>
+	<resultMap type="LeaseRecode" id="RecodeByUidresultMap">
+		<id property="id" column="id"/>
+		<result property="cid" column="cid"/>
+		<result property="uid" column="uid"/>
+		<result property="starttime" column="starttime"/>
+		<result property="estimateday" column="estimateday"/>
+		<result property="state" column="state"/>
+		<association property="car" javaType="Car">
+			<id column="cid" property="cid"/>
+			<result column="number" property="number"/>
+			<result column="brand" property="brand"/>
+			<result column="type" property="type"/>
+			<result column="model" property="model"/>
+			<result column="state" property="state"/>
+			<result column="picture" property="picture"/>
+			<result column="description" property="description"/>
+			<result column="price" property="price"/>
+			<result column="deposit" property="deposit"/>
+		</association>
+	</resultMap>
+	<!-- //根据id查询出租赁信息 -->
+	<select id="selectLeaseRecodeById" parameterType="Integer" resultType="LeaseRecode">
+		select * from lease_recode where id=#{id}
+	</select>
+	<!-- //修改租赁状态 -->
+	<select id="updateLeaseRecode" parameterType="LeaseRecode">
+		update lease_recode set state=#{state} where uid=#{uid} and cid=#{cid}
+	</select>
+	<!-- //增加租赁记录 -->
+	<insert id="addLeaseRecode" parameterType="LeaseRecode">
+		insert into lease_recode values(null,#{cid},#{uid},#{starttime},#{estimateday},#{state})
+	</insert>
+</mapper>

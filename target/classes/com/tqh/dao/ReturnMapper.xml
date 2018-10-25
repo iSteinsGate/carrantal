@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tqh.dao.ReturnMapper">
+
+	<!-- 获得分页用户列表-->
+	<select id="selectReturnRecodeByPage" resultType="ReturnRecode" parameterType="QueryVo">
+		select * from Return_recode limit #{start},#{rows}
+	</select>
+	<!-- 获总记录数-->
+	<select id="selectCount" resultType="Integer">
+		select count(*) from Return_recode
+	</select>
+	<delete id="deleteReturnRecode" parameterType="Integer">
+		delete from return_recode where id=#{id}
+	</delete>
+	<!-- //根据用户id查询归还信息 -->
+	<select id="selectReturnRecodeByUid" parameterType="Integer" resultType="ReturnRecode">
+	select * from Return_recode where uid=#{uid}
+	</select>
+	<!-- //增加归还记录 -->
+	<select id="insertReturnRecode" parameterType="ReturnRecode"> 
+		insert into return_recode 
+		values(null,#{cid},#{uid},#{endtime},#{gasolinecost},#{damagecost},#{usecost},#{totalprice})
+	</select>
+</mapper>

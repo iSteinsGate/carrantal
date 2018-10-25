@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tqh.dao.ReserveMapper">
+
+	<!-- 获得分页用户列表-->
+	<select id="selectReserveRecodeByPage" resultType="ReserveRecode" parameterType="QueryVo">
+		select * from reserve_recode 
+		<if test="state!=null">
+			where state=#{state}
+		</if>
+		limit #{start},#{rows} 
+	</select>
+	<!-- 获总记录数-->
+	<select id="selectCount" resultType="Integer" parameterType="QueryVo">
+		select count(*) from reserve_recode
+		 <if test="state!=null">
+			where state=#{state}
+		</if>
+	</select>
+	<!-- //删除预约记录 -->
+	<delete id="deleteReserveRecode" parameterType="Integer">
+		delete from reserve_recode where id=#{id} 
+	</delete>
+	<!-- //增加预约记录 -->
+	<insert id="insertReserveRecode" parameterType="ReserveRecode">
+		insert into 
+		reserve_recode(cid,uid,starttime,estimateday,state) 
+		values(#{cid},#{uid},#{starttime},#{estimateday},#{state}) 
+	</insert>
+	<!-- //根据用户id查询我的预约 关联汽车信息-->
+	<select id="selectReserveRecodeByUid" parameterType="Integer" resultMap="uidresultMap">
+		select * from reserve_recode,car 
+		where reserve_recode.cid=car.cid 
+		and reserve_recode.uid=#{uid} order by reserve_recode.starttime desc limit 1;
+		
+	</select>
+	<resultMap type="ReserveRecode" id="uidresultMap">
+		<id property="id" column="id"/>
+		<result property="cid" column="cid"/>
+		<result property="uid" column="uid"/>
+		<result property="starttime" column="starttime"/>
+		<result property="estimateday" column="estimateday"/>
+		<result property="state" column="state"/>
+		<association property="car" javaType="Car">
+			<id column="cid" property="cid"/>
+			<result column="number" property="number"/>
+			<result column="brand" property="brand"/>
+			<result column="type" property="type"/>
+			<result column="model" property="model"/>
+			<result column="state" property="state"/>
+			<result column="picture" property="picture"/>
+			<result column="description" property="description"/>
+			<result column="price" property="price"/>
+			<result column="deposit" property="deposit"/>
+		</association>
+	</resultMap>
+	<!-- //根据id查询预约 -->
+	<select id="selectReserveRecodeById" parameterType="Integer" resultType="ReserveRecode">
+		select * from reserve_recode where id=#{id}
+	</select>
+	<!-- //修改预约记录 -->
+	<update id="updateReserveRecode" parameterType="ReserveRecode">
+		update reserve_recode set state=#{state} where id=#{id}
+	</update>
+</mapper>

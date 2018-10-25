@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tqh.dao.CarMapper">
+
+	<!-- 获得分页车辆列表-->
+	<select id="selectCarByPage" resultType="car" parameterType="QueryVo">
+		select * from car 
+		<where>
+		<if test="brand!=null and brand !=''">
+		 brand=#{brand}
+		</if>
+		<if test="model!=null">
+			and model like "%"#{model}"%"
+		</if>
+		</where>
+		 limit #{start},#{rows}
+	</select>
+	<!-- 获总记录数-->
+	<select id="selectCount" resultType="Integer" parameterType="QueryVo">
+		select count(*) from car 
+		<where>
+			<if test="brand!=null and brand !=''">
+			 brand=#{brand}
+			</if>
+			<if test="model!=null">
+				and model like "%"#{model}"%"
+			</if>
+		</where>
+	</select>
+	<!-- 添加车 -->
+	<insert id="insertCar" parameterType="car">
+		<selectKey keyProperty="cid" order="AFTER" resultType="Integer">
+			select last_insert_id();
+		</selectKey>
+		insert into car(number,brand,model,state,price,picture,description,deposit) 
+		values(#{number},#{brand},#{model},#{state},#{price},#{picture},#{description},#{deposit})
+	</insert>
+	<!-- 修改车 -->
+	<update id="updateCar" parameterType="car">
+		update car set
+		number=#{number},
+		brand=#{brand},
+		model=#{model},
+		state=#{state},
+		price=#{price},
+		deposit=#{deposit},
+		picture=#{picture},
+		description=#{description}
+		where cid=#{cid}
+	</update>
+	<!-- 删除 -->
+	<delete id="deleteCar" parameterType="Integer">
+		delete from car where cid=#{cid}
+	</delete>
+	<!-- //根据车牌查找 -->
+	<select id="selectCarByNumber" parameterType="String" resultType="car"> 
+		select * from car where number=#{number}
+	</select>
+	<!-- //根据车名查找 -->
+	<select id="selectCarByModel" parameterType="String" resultType="car">
+		select * from car where model like "%"#{model}"%"
+	</select>
+    <!-- //根据品牌查询 -->
+	<select id="selectCarByBrand" parameterType="String" resultType="car">
+		select * from car where brand=#{brand}
+	</select>
+	<!-- //根据uid查询车 -->
+	<select id="selectCarById" parameterType="String" resultType="car">
+		select * from car where cid=#{cid}
+	</select>
+	<!-- //随机获取6辆车的信息用于页面展示 -->
+	<select id="selectCarByRand" resultType="Car" parameterType="Integer">
+		select * from car order by rand() limit #{rows}
+	</select>
+</mapper>
